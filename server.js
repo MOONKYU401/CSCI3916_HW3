@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
@@ -80,6 +81,16 @@ router.route('/movies')
         const movie = await Movie.findByIdAndDelete(req.params.movieId);
         if (!movie) return res.status(404).json({ message: 'Movie not found.' });
         res.json({ message: 'Movie deleted successfully.' });
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
+    })
+    .put(authJwtController.isAuthenticated, async (req, res) => {
+      try {
+        const movie = await
+        Movie.findByIdAndUpdate(req.params.movieId, req.body, { new: true });
+        if (!movie) return res.status(404).json({ message: 'Movie not found.' });
+        res.json(movie);
       } catch (err) {
         res.status(500).json({ message: err.message });
       }
