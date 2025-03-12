@@ -69,10 +69,20 @@ router.post('/signin', async (req, res) => { // Use async/await
 
 router.route('/movies')
     .get(authJwtController.isAuthenticated, async (req, res) => {
+          const id = req.params.movieId;
         return res.status(500).json({ success: false, message: 'GET request not supported' });
     })
     .post(authJwtController.isAuthenticated, async (req, res) => {
         return res.status(500).json({ success: false, message: 'POST request not supported' });
+    })
+    .delete(authJwtController.isAuthenticated, async (req, res) => {
+      try {
+        const movie = await Movie.findByIdAndDelete(req.params.movieId);
+        if (!movie) return res.status(404).json({ message: 'Movie not found.' });
+        res.json({ message: 'Movie deleted successfully.' });
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
     });
 
 app.use('/', router);
